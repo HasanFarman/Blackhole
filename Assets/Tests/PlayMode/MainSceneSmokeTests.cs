@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace Blackhole.Tests
 {
@@ -59,6 +60,36 @@ namespace Blackhole.Tests
 
             Assert.IsTrue(runManager.IsGameOver);
             Assert.IsTrue(hud.IsGameOverVisible);
+        }
+
+        [UnityTest]
+        public IEnumerator RestartButton_ReloadsRun()
+        {
+            SceneManager.LoadScene("Main");
+            yield return null;
+            yield return null;
+
+            var player = Object.FindFirstObjectByType<BlackHoleController>();
+            var runManager = Object.FindFirstObjectByType<RunManager>();
+
+            player.Die();
+            yield return null;
+            yield return null;
+
+            var restartButton = Object.FindFirstObjectByType<RestartButton>();
+            Assert.IsTrue(runManager.IsGameOver);
+            Assert.IsNotNull(restartButton);
+
+            restartButton.GetComponent<Button>().onClick.Invoke();
+            yield return null;
+            yield return null;
+
+            var reloadedRun = Object.FindFirstObjectByType<RunManager>();
+            var reloadedPlayer = Object.FindFirstObjectByType<BlackHoleController>();
+            Assert.IsNotNull(reloadedRun);
+            Assert.IsFalse(reloadedRun.IsGameOver);
+            Assert.IsFalse(reloadedPlayer.IsDead);
+            Assert.AreEqual(1f, Time.timeScale);
         }
     }
 }

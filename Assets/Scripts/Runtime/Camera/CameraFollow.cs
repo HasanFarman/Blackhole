@@ -9,7 +9,6 @@ namespace Blackhole
         [SerializeField] private float distance = 14f;
         [SerializeField] private float followSharpness = 8f;
         [SerializeField] private float shakeStrength = 0.18f;
-        [SerializeField] private float shakeDuration = 0.12f;
 
         private Vector3 smoothVelocity;
         private float shakeTimer;

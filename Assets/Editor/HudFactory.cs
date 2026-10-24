@@ -15,8 +15,8 @@ namespace Blackhole.Editor
             UIFactory.TopLeft(waveCard.rectTransform, new Vector2(32f, -28f), new Vector2(368f, 124f));
 
             var waveLabel = UIFactory.CreateText(
-                waveCard.transform, "WaveLabel", "WAVE", 15, TextWeight.Regular,
-                TextAnchor.UpperLeft, UITheme.Muted, tracked: true);
+                waveCard.transform, "WaveLabel", "WAVE", 16, TextWeight.Regular,
+                TextAnchor.UpperLeft, new Color(0.64f, 0.74f, 0.87f, 1f), tracked: true);
             UIFactory.TopLeft(waveLabel.rectTransform, new Vector2(26f, -18f), new Vector2(200f, 22f));
 
             var waveText = UIFactory.CreateText(
@@ -31,8 +31,8 @@ namespace Blackhole.Editor
                 new Vector2(196f, -30f), new Vector2(1f, 64f));
 
             var enemiesLabel = UIFactory.CreateText(
-                waveCard.transform, "EnemiesLabel", "ENEMIES", 13, TextWeight.Regular,
-                TextAnchor.UpperLeft, UITheme.Muted, tracked: true);
+                waveCard.transform, "EnemiesLabel", "ENEMIES", 14, TextWeight.Regular,
+                TextAnchor.UpperLeft, new Color(0.64f, 0.74f, 0.87f, 1f), tracked: true);
             UIFactory.TopLeft(enemiesLabel.rectTransform, new Vector2(222f, -30f), new Vector2(140f, 20f));
 
             var enemyText = UIFactory.CreateText(
@@ -45,8 +45,8 @@ namespace Blackhole.Editor
             UIFactory.TopRight(debrisCard.rectTransform, new Vector2(-32f, -28f), new Vector2(210f, 96f));
 
             var debrisLabel = UIFactory.CreateText(
-                debrisCard.transform, "DebrisLabel", "DEBRIS", 13, TextWeight.Regular,
-                TextAnchor.UpperLeft, UITheme.Muted, tracked: true);
+                debrisCard.transform, "DebrisLabel", "DEBRIS", 14, TextWeight.Regular,
+                TextAnchor.UpperLeft, new Color(0.64f, 0.74f, 0.87f, 1f), tracked: true);
             UIFactory.TopLeft(debrisLabel.rectTransform, new Vector2(22f, -18f), new Vector2(120f, 20f));
 
             var debrisText = UIFactory.CreateText(

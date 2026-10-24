@@ -11,7 +11,7 @@ namespace Blackhole
     public static class UITheme
     {
         public static readonly Color Night = new Color(0.012f, 0.02f, 0.047f, 1f);
-        public static readonly Color Panel = new Color(0.043f, 0.071f, 0.141f, 0.86f);
+        public static readonly Color Panel = new Color(0.055f, 0.085f, 0.16f, 0.9f);
         public static readonly Color PanelSoft = new Color(0.055f, 0.09f, 0.17f, 0.55f);
         public static readonly Color Text = new Color(0.918f, 0.949f, 1f, 1f);
         public static readonly Color Muted = new Color(0.561f, 0.663f, 0.796f, 1f);

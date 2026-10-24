@@ -59,6 +59,37 @@ namespace Blackhole.Tests
             Assert.AreEqual(1, orbit.OrbitingCount);
         }
 
+        [UnityTest]
+        public IEnumerator TryThrowAt_NearPlayer_DoesNotThrow()
+        {
+            var player = CreatePlayer(out var controller, out var orbit);
+            var debris = CreateDebris(orbit, player.transform, new Vector3(3f, 0f, 0f));
+            orbit.Capture(debris);
+            yield return new WaitForFixedUpdate();
+
+            Assert.IsFalse(controller.TryThrowAt(new Vector3(1f, 0f, 0f)));
+            Assert.AreEqual(1, orbit.OrbitingCount);
+            Assert.AreEqual(DebrisState.Orbiting, debris.State);
+        }
+
+        [UnityTest]
+        public IEnumerator TryThrowAt_RespectsCooldown()
+        {
+            var player = CreatePlayer(out var controller, out var orbit);
+            var body = player.GetComponent<Rigidbody>();
+            controller.Configure(orbit, body, null, 7f, 40f, 20f, 1f);
+
+            var first = CreateDebris(orbit, player.transform, new Vector3(3f, 0f, 0f));
+            var second = CreateDebris(orbit, player.transform, new Vector3(0f, 0f, 3f));
+            orbit.Capture(first);
+            orbit.Capture(second);
+            yield return new WaitForFixedUpdate();
+
+            Assert.IsTrue(controller.TryThrowAt(new Vector3(5f, 0f, 0f)));
+            Assert.IsFalse(controller.TryThrowAt(new Vector3(5f, 0f, 0f)));
+            Assert.AreEqual(1, orbit.OrbitingCount);
+        }
+
         [Test]
         public void Die_InvokesDiedOnce()
         {

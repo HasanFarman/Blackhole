@@ -44,6 +44,48 @@ namespace Blackhole.Tests
             yield return null;
         }
 
+        [UnityTest]
+        public IEnumerator ClearedWave_StartsBreakAndSpawnsBonusDebris()
+        {
+            var player = CreateObject("Player");
+            player.transform.position = new Vector3(0f, 1f, 0f);
+            var orbit = player.AddComponent<BlackHoleOrbit>();
+            orbit.Configure(player.transform, 4.5f, 2.2f, 3.8f, 120f);
+
+            var field = CreateObject("DebrisField").AddComponent<DebrisField>();
+            var prefab = CreateDebrisPrefab();
+            field.Configure(new[] { prefab }, orbit, player.transform, 20);
+
+            var spawner = CreateSpawner();
+            spawner.Configure(
+                player.transform,
+                field,
+                null,
+                Array.Empty<GameObject>(),
+                10f,
+                12f,
+                baseCount: 0,
+                addedPerWave: 0,
+                breakSeconds: 1f,
+                bonusDebris: 3,
+                interval: 0.1f);
+
+            spawner.Begin();
+            yield return null;
+            yield return new WaitForSeconds(0.1f);
+
+            Assert.IsTrue(spawner.IsBreak);
+            Assert.AreEqual(3, field.ActiveCount);
+            Assert.That(spawner.BreakSecondsRemaining, Is.GreaterThan(0f));
+
+            var runManager = CreateObject("RunManager").AddComponent<RunManager>();
+            runManager.Configure(null, spawner, field, null, 0);
+            runManager.GameOver(1);
+
+            Assert.IsFalse(spawner.IsRunning);
+            Assert.IsFalse(spawner.IsBreak);
+        }
+
         [Test]
         public void GameOver_StopsSpawnerAndShowsHud()
         {
@@ -74,6 +116,21 @@ namespace Blackhole.Tests
         private EnemySpawner CreateSpawner()
         {
             return CreateObject("EnemySpawner").AddComponent<EnemySpawner>();
+        }
+
+        private GameObject CreateDebrisPrefab()
+        {
+            var prefab = CreateObject("DebrisPrefab");
+            prefab.SetActive(false);
+
+            var body = prefab.AddComponent<Rigidbody>();
+            body.useGravity = false;
+
+            var collider = prefab.AddComponent<SphereCollider>();
+            collider.isTrigger = true;
+
+            prefab.AddComponent<Debris>();
+            return prefab;
         }
     }
 }

@@ -9,6 +9,9 @@ namespace Blackhole
         [SerializeField] private float spinDegreesPerSecond = 180f;
         [SerializeField] private float thrownDuration = 1.8f;
         [SerializeField] private float recaptureCooldownSeconds = 0.35f;
+        [SerializeField] private float returnAcceleration = 16f;
+        [SerializeField] private float maxLooseSpeed = 10f;
+        [SerializeField] private float linearDamping = 0.5f;
 
         private BlackHoleOrbit orbit;
         private Transform player;
@@ -51,6 +54,7 @@ namespace Blackhole
             body.constraints = RigidbodyConstraints.FreezePositionY;
             body.interpolation = RigidbodyInterpolation.Interpolate;
             body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            body.linearDamping = linearDamping;
             body.isKinematic = false;
             body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
@@ -124,6 +128,7 @@ namespace Blackhole
             if (Body != null)
             {
                 body.isKinematic = false;
+                ClampLooseSpeed();
             }
         }
 
@@ -144,16 +149,18 @@ namespace Blackhole
                     ReturnToLoose();
                 }
             }
-            else if (state == DebrisState.Loose &&
-                     recaptureTimer <= 0f &&
-                     orbit != null &&
-                     player != null)
+            else if (state == DebrisState.Loose)
             {
-                var offset = transform.position - player.position;
-                offset.y = 0f;
-                if (offset.sqrMagnitude <= orbit.CaptureRadius * orbit.CaptureRadius)
+                ApplyReturnForce();
+
+                if (recaptureTimer <= 0f && orbit != null && player != null)
                 {
-                    orbit.Capture(this);
+                    var offset = transform.position - player.position;
+                    offset.y = 0f;
+                    if (offset.sqrMagnitude <= orbit.CaptureRadius * orbit.CaptureRadius)
+                    {
+                        orbit.Capture(this);
+                    }
                 }
             }
 
@@ -161,6 +168,37 @@ namespace Blackhole
             {
                 visual.Rotate(Vector3.up, spinDegreesPerSecond * step, Space.Self);
             }
+        }
+
+        private void ApplyReturnForce()
+        {
+            if (Body == null || player == null)
+            {
+                return;
+            }
+
+            var offset = player.position - transform.position;
+            offset.y = 0f;
+            if (offset.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            body.AddForce(offset.normalized * returnAcceleration, ForceMode.Acceleration);
+            ClampLooseSpeed();
+        }
+
+        private void ClampLooseSpeed()
+        {
+            var velocity = body.linearVelocity;
+            var planar = new Vector3(velocity.x, 0f, velocity.z);
+            if (planar.magnitude <= maxLooseSpeed)
+            {
+                return;
+            }
+
+            planar = planar.normalized * maxLooseSpeed;
+            body.linearVelocity = new Vector3(planar.x, velocity.y, planar.z);
         }
 
         private void OnTriggerEnter(Collider other)

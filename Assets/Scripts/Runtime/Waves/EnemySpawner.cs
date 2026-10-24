@@ -33,7 +33,12 @@ namespace Blackhole
             RunManager manager,
             GameObject[] prefabs,
             float minRadius = 13f,
-            float maxRadius = 17f)
+            float maxRadius = 17f,
+            int baseCount = 5,
+            int addedPerWave = 3,
+            float breakSeconds = 5f,
+            int bonusDebris = 3,
+            float interval = 1.2f)
         {
             player = playerTransform;
             debrisField = field;
@@ -41,6 +46,11 @@ namespace Blackhole
             enemyPrefabs = prefabs;
             spawnRadiusMin = minRadius;
             spawnRadiusMax = maxRadius;
+            baseEnemyCount = baseCount;
+            enemiesAddedPerWave = addedPerWave;
+            waveBreakSeconds = breakSeconds;
+            bonusDebrisCount = bonusDebris;
+            spawnInterval = interval;
         }
 
         public void Begin()

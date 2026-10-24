@@ -13,6 +13,7 @@ namespace Blackhole
         [SerializeField] private float acceleration = 40f;
         [SerializeField] private float throwSpeed = 20f;
         [SerializeField] private float throwCooldown = 0.12f;
+        [SerializeField] private float aimDeadZone = 1.5f;
 
         private Vector2 moveInput;
         private float nextThrowTime;
@@ -41,7 +42,8 @@ namespace Blackhole
             float speed = 7f,
             float accel = 40f,
             float launchSpeed = 20f,
-            float cooldown = 0.12f)
+            float cooldown = 0.12f,
+            float deadZone = 1.5f)
         {
             orbit = owningOrbit;
             body = owningBody;
@@ -50,6 +52,7 @@ namespace Blackhole
             acceleration = accel;
             throwSpeed = launchSpeed;
             throwCooldown = cooldown;
+            aimDeadZone = deadZone;
         }
 
         private void Update()
@@ -114,14 +117,14 @@ namespace Blackhole
 
         public bool TryThrowAt(Vector3 worldAimPoint)
         {
-            if (dead || orbit == null)
+            if (dead || orbit == null || Time.time < nextThrowTime)
             {
                 return false;
             }
 
             var direction = worldAimPoint - transform.position;
             direction.y = 0f;
-            if (direction.sqrMagnitude < 0.04f)
+            if (direction.sqrMagnitude < aimDeadZone * aimDeadZone)
             {
                 return false;
             }

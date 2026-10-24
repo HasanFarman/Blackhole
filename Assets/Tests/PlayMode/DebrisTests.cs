@@ -7,7 +7,9 @@ namespace Blackhole.Tests
 {
     public class DebrisTests
     {
-        private const int DebrisLayer = 8;
+        private static readonly int DebrisLayer = LayerMask.NameToLayer("Debris") >= 0
+            ? LayerMask.NameToLayer("Debris")
+            : 9;
 
         private readonly System.Collections.Generic.List<GameObject> _created = new();
 
@@ -61,6 +63,29 @@ namespace Blackhole.Tests
             Assert.AreEqual(0, orbit.OrbitingCount);
             Assert.AreEqual(DebrisState.Thrown, debris.State);
             Assert.Greater(debris.Body.linearVelocity.x, 0f);
+        }
+
+        [UnityTest]
+        public IEnumerator MissedThrow_ReturnsToOrbit()
+        {
+            var player = CreatePlayer(out var orbit);
+            var debris = CreateDebris(orbit, player.transform, new Vector3(3f, 0f, 0f));
+            orbit.Capture(debris);
+            yield return new WaitForFixedUpdate();
+
+            Assert.IsTrue(orbit.TryThrow(Vector3.right, 20f));
+            Assert.AreEqual(DebrisState.Thrown, debris.State);
+
+            Time.timeScale = 4f;
+            yield return new WaitForSeconds(12f);
+            Time.timeScale = 1f;
+
+            var distance = Vector3.Distance(player.transform.position, debris.transform.position);
+            Assert.AreEqual(
+                DebrisState.Orbiting,
+                debris.State,
+                $"distance={distance:F2} velocity={debris.Body.linearVelocity} position={debris.transform.position}");
+            Assert.AreEqual(1, orbit.OrbitingCount);
         }
 
         [UnityTest]

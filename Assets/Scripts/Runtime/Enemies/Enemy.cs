@@ -142,6 +142,7 @@ namespace Blackhole
             }
 
             FlashWhite();
+            FxBurst.SpawnEnemy(transform.position);
             Died?.Invoke(this);
             CameraFollow.Instance?.Shake(0.14f, 0.1f);
             StartCoroutine(FinishDeath());

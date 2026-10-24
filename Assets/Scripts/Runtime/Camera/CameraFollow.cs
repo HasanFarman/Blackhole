@@ -6,7 +6,7 @@ namespace Blackhole
     {
         [SerializeField] private Transform target;
         [SerializeField, Range(60f, 70f)] private float pitch = 65f;
-        [SerializeField] private float distance = 14f;
+        [SerializeField] private float distance = 18f;
         [SerializeField] private float followSharpness = 8f;
         [SerializeField] private float shakeStrength = 0.18f;
 

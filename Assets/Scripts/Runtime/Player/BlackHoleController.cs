@@ -63,6 +63,12 @@ namespace Blackhole
                 return;
             }
 
+            if (PauseMenu.IsPaused)
+            {
+                moveInput = Vector2.zero;
+                return;
+            }
+
             var keyboard = Keyboard.current;
             if (keyboard != null)
             {

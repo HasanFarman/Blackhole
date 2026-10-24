@@ -13,6 +13,8 @@ namespace Blackhole
         [SerializeField] private Text breakText;
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private Text gameOverText;
+        [SerializeField] private CanvasGroup gameOverGroup;
+        [SerializeField] private Button menuButton;
 
         private bool gameOverVisible;
 
@@ -26,7 +28,9 @@ namespace Blackhole
             Text debris,
             Text breakLabel,
             GameObject gameOver,
-            Text gameOverLabel)
+            Text gameOverLabel,
+            CanvasGroup gameOverCanvasGroup = null,
+            Button returnToMenuButton = null)
         {
             spawner = enemySpawner;
             orbit = blackHoleOrbit;
@@ -36,6 +40,8 @@ namespace Blackhole
             breakText = breakLabel;
             gameOverPanel = gameOver;
             gameOverText = gameOverLabel;
+            gameOverGroup = gameOverCanvasGroup;
+            menuButton = returnToMenuButton;
         }
 
         private void Awake()
@@ -43,6 +49,19 @@ namespace Blackhole
             if (gameOverPanel != null)
             {
                 gameOverPanel.SetActive(false);
+            }
+
+            if (menuButton != null)
+            {
+                menuButton.onClick.AddListener(ReturnToMenu);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (menuButton != null)
+            {
+                menuButton.onClick.RemoveListener(ReturnToMenu);
             }
         }
 
@@ -52,12 +71,12 @@ namespace Blackhole
             {
                 if (waveText != null)
                 {
-                    waveText.text = $"Wave {spawner.CurrentWave}";
+                    waveText.text = spawner.CurrentWave.ToString("00");
                 }
 
                 if (enemyText != null)
                 {
-                    enemyText.text = $"Enemies {spawner.AliveEnemies}";
+                    enemyText.text = spawner.AliveEnemies.ToString("00");
                 }
 
                 if (breakText != null)
@@ -65,14 +84,14 @@ namespace Blackhole
                     breakText.gameObject.SetActive(spawner.IsBreak);
                     if (spawner.IsBreak)
                     {
-                        breakText.text = $"Next wave in {Mathf.CeilToInt(spawner.BreakSecondsRemaining)}";
+                        breakText.text = "NEXT WAVE IN " + Mathf.CeilToInt(spawner.BreakSecondsRemaining);
                     }
                 }
             }
 
             if (orbit != null && debrisText != null)
             {
-                debrisText.text = $"Debris {orbit.OrbitingCount}";
+                debrisText.text = orbit.OrbitingCount.ToString("00");
             }
         }
 
@@ -85,10 +104,22 @@ namespace Blackhole
                 gameOverPanel.SetActive(true);
             }
 
+            if (gameOverGroup != null)
+            {
+                gameOverGroup.alpha = 1f;
+                gameOverGroup.blocksRaycasts = true;
+                gameOverGroup.interactable = true;
+            }
+
             if (gameOverText != null)
             {
-                gameOverText.text = $"Run over\nReached wave {wave}\nPress R or click Restart";
+                gameOverText.text = "REACHED WAVE " + wave.ToString("00");
             }
+        }
+
+        public void ReturnToMenu()
+        {
+            SceneFlow.LoadMenu();
         }
     }
 }
